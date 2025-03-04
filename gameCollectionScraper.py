@@ -2,13 +2,16 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
 from time import sleep
 import os
 import dotenv
 
+TIMEOUT: int = 10
+
 def TALogin(driver, gamertag: str, password: str) -> bool:
-    """This function will move the driver to the login page and fill in the relevant fields to login to the website
+    """Moves the driver to the login page and fills in relevant fields to login to the website
     Returns True if login was successful otherwise False"""
     # Go to login page
     driver.get("https://www.trueachievements.com/login")
@@ -19,9 +22,9 @@ def TALogin(driver, gamertag: str, password: str) -> bool:
         gamertagFieldPresent = EC.presence_of_element_located((By.ID, "txtGamerTag"))
         passwordFieldPresent = EC.presence_of_element_located((By.ID, "txtPassword"))
         loginButtonPresent = EC.presence_of_element_located((By.ID, "btnLogin"))
-        WebDriverWait(driver, 10).until(gamertagFieldPresent)
-        WebDriverWait(driver, 10).until(passwordFieldPresent)
-        WebDriverWait(driver, 10).until(loginButtonPresent)
+        WebDriverWait(driver, TIMEOUT).until(gamertagFieldPresent)
+        WebDriverWait(driver, TIMEOUT).until(passwordFieldPresent)
+        WebDriverWait(driver, TIMEOUT).until(loginButtonPresent)
 
         # Once the text fields are found, enter login information
         driver.find_element(By.ID , 'txtGamerTag').send_keys(gamertag)
@@ -33,14 +36,13 @@ def TALogin(driver, gamertag: str, password: str) -> bool:
     return True
 
 def parseTable(table: str) -> list[list[str]]:
-    """This function takes in table, a string that is html for a table
+    """Takes in table, a string that is HTML to build a table
     It returns a parsed version of the table"""
     soup = BeautifulSoup(table, 'html.parser')
 
     # Get all table rows in a list
     rows = soup.find_all("tr")
-    # Keep track of formatted table list[list[str]]
-    fTable = []
+    fTable = [] # Keep track of formatted table list[list[str]]
 
     # Add headers to the row
     fTable.append([])
@@ -65,21 +67,59 @@ def scrapeGameCollectionTable(driver):
     try:
         # Wait until the table is on the page
         element_present = EC.presence_of_element_located((By.CLASS_NAME, gameCollectionTableClass))
-        WebDriverWait(driver, 10).until(element_present)
+        WebDriverWait(driver, TIMEOUT).until(element_present)
 
+        # If found, return table HTML
         return driver.find_element(By.CLASS_NAME, gameCollectionTableClass).get_attribute('innerHTML')
     except:
         print("ERROR: Could not get the contents of the table!")
 
-def scrapeGameCollection(driver, searchGamertag: str):
-    """Moves through each page, scrapes the table, and then appends new data"""
-    driver.get(f"https://www.trueachievements.com/gamer/{searchGamertag}/gamecollection")
-    
-    # Test print out
-    gameTableHTML = scrapeGameCollectionTable(driver)
-    for i in parseTable(gameTableHTML)[0:-1]:
-        print(f"{i[1]} | {i[3]} | {i[8]}")
+def moveToNextPage(driver, currentPage: int):
+    """Moves to the next page on the game collection page and waits until it is done loading"""
+    loadingDivID = "oGameCollection_Loading"
 
+    # Send js to console to move to next page
+    driver.execute_script(f"AJAXList.Buttons('oGameCollectionP','{currentPage + 1}')")
+
+    # Wait until loading page is gone
+    loadingDiv = driver.find_element(By.ID, loadingDivID)
+    WebDriverWait(driver, TIMEOUT).until(lambda x: not loadingDiv.is_displayed())
+
+def checkValidPage(driver) -> bool:
+    """Try to find a warnings panel. If there is no warnings panel, then a NoSuchElementException will be raised
+    That means the page is valid, so return True
+    Otherwise, if there is a warnings panel on the page, that means it is invalid so return false"""
+    warningsClass = "warningspanel"
+
+    try:
+        driver.find_element(By.CLASS_NAME, warningsClass)
+        return False
+    except NoSuchElementException:
+        return True
+
+def scrapeGameCollection(driver, searchGamertag: str) -> list[list[str]]:
+    """Moves through each page, scrapes the table, and then appends new data"""
+    # Go to game collection page
+    driver.get(f"https://www.trueachievements.com/gamer/{searchGamertag}/gamecollection")
+    currentPage = 1
+    
+    # Get game table header and add to gameTable [['row1', 'row2' ... 'rown']]
+    gameTableHTML = scrapeGameCollectionTable(driver)
+    gameTable = [parseTable(gameTableHTML)[0]] # Build game table formatted as list
+
+    # Loop through all pages (Keep moving to the next page until the page is invalid)
+    while checkValidPage(driver):
+        # Get the HTML from the game table and add parsed rows to formatted game table (2d array)
+        gameTableHTML = scrapeGameCollectionTable(driver)
+        gameTable.extend(parseTable(gameTableHTML)[1:-1])
+
+        # Move to the next page (and wait for it to stop loading)
+        moveToNextPage(driver, currentPage)
+        currentPage += 1
+
+    # TEST PRINT
+    for row in gameTable:
+        print(f"{row[1]} | {row[3]} | {row[8]}")
 
 if __name__ == "__main__":
     # Set the gamertag to search as a constant for now
@@ -93,7 +133,7 @@ if __name__ == "__main__":
     # Creating driver options
     chromeOptions = webdriver.ChromeOptions()
     #chromeOptions.add_argument("start-maximized")
-    chromeOptions.add_argument("--headless")
+    #chromeOptions.add_argument("--headless")
     chromeOptions.add_argument('--ignore-certificate-errors-spki-list')
     chromeOptions.add_argument("--ignore-certificate-errors")
     chromeOptions.add_argument("--ignore-ssl-errors")
