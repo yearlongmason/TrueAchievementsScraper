@@ -118,13 +118,13 @@ def scrapeGameCollection(driver, searchGamertag: str) -> list[list[str]]:
         currentPage += 1
 
     # TEST PRINT
-    for row in gameTable:
-        print(f"{row[1]} | {row[3]} | {row[8]}")
+    #for row in gameTable:
+    #    print(f"{row[1]} | {row[3]} | {row[8]}")
 
-if __name__ == "__main__":
-    # Set the gamertag to search as a constant for now
-    searchGamertag = "yearlongmason"
+    return gameTable
 
+def scrapeFromGamertag(gamertag: str) -> list[list[str]]:
+    """Creates web driver and scrapes game collection"""
     # Load login credentials from env
     dotenv.load_dotenv()
     login_gamertag = os.getenv('gamertag')
@@ -133,12 +133,62 @@ if __name__ == "__main__":
     # Creating driver options
     chromeOptions = webdriver.ChromeOptions()
     #chromeOptions.add_argument("start-maximized")
-    #chromeOptions.add_argument("--headless")
+    chromeOptions.add_argument("--headless")
     chromeOptions.add_argument('--ignore-certificate-errors-spki-list')
     chromeOptions.add_argument("--ignore-certificate-errors")
     chromeOptions.add_argument("--ignore-ssl-errors")
 
-    # Starting Chrome driver
+    # Create driver
     driver = webdriver.Chrome(options=chromeOptions)
+
+    # Login to TrueAchievments and return scraped game collection
     TALogin(driver, login_gamertag, login_password)
-    scrapeGameCollection(driver, searchGamertag)
+    return scrapeGameCollection(driver, gamertag)
+
+def timePlayedToMinutesPlayed(timePlayed: str) -> int:
+    # If time played is an empty string then assume 0 minutes
+    if not timePlayed:
+        return 0
+    
+    # If the user has played more than an hour then it is formatted as XX hrs XX mins
+    if "hrs" in timePlayed:
+        hoursPlayed = int(timePlayed.split(" ")[0])
+        minutesPlayed = int(timePlayed.split(" ")[2])
+        return ((hoursPlayed * 60) + minutesPlayed)
+    # If the user has played less than 1 hour then it is formatted as XX mins
+    else:
+        minutesPlayed = int(timePlayed.split(" ")[0])
+        return minutesPlayed
+
+def formatGameTableJSON(gameTable: list[list[str]]) -> list[dict[str:any]]:
+    """Formats game table from scraper as json"""
+    gameTableJSON = []
+    
+    # Loop through each row in the game table
+    for game in gameTable[1:]:
+
+        # Create a new dictionary for each game
+        newGameDict = dict()
+        for i, header in enumerate(gameTable[0]):
+            if header in ["%age"]:
+                newGameDict[header] = float(game[i])
+            elif header not in ["", " ", "Notes"]:
+                newGameDict[header] = game[i]
+        newGameDict["Minutes played"] = timePlayedToMinutesPlayed(newGameDict["Time played"])
+
+        # For now "My rating" doesn't give any useful information so we delete it
+        # We might make use of this later
+        del newGameDict["My rating"]
+        newGameDict["Title"] = newGameDict["Title"].replace("'", "") # JUST FOR TESTING, REMOVE LATER
+
+        # Append new game to the game table
+        gameTableJSON.append(newGameDict)
+
+    return gameTableJSON
+
+if __name__ == "__main__":
+    # Set the gamertag to search as a constant for now
+    searchGamertag = "yearlongmason"
+
+    gameTable = scrapeFromGamertag(searchGamertag)
+    print(formatGameTableJSON(gameTable))
