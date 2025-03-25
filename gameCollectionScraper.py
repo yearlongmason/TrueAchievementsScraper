@@ -2,9 +2,11 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from bs4 import BeautifulSoup
 from time import sleep
+from random import uniform
 import os
 import dotenv
 
@@ -27,9 +29,14 @@ def TALogin(driver, gamertag: str, password: str) -> bool:
         WebDriverWait(driver, TIMEOUT).until(loginButtonPresent)
 
         # Once the text fields are found, enter login information
+        #sleep(uniform(5,15))
         driver.find_element(By.ID , 'txtGamerTag').send_keys(gamertag)
+        #sleep(uniform(5,15))
         driver.find_element(By.ID , 'txtPassword').send_keys(password)
+        #sleep(uniform(5,15))
         driver.find_element(By.ID , 'btnLogin').click()
+        sleep(uniform(5,15))
+        #driver.execute_script(f"Postback('btnLogin_click')") # Sends javascript to console to login
     except:
         print("ERROR: Could not login!")
         return False
@@ -133,13 +140,24 @@ def scrapeFromGamertag(gamertag: str) -> list[list[str]]:
     # Creating driver options
     chromeOptions = webdriver.ChromeOptions()
     #chromeOptions.add_argument("start-maximized")
-    chromeOptions.add_argument("--headless")
-    chromeOptions.add_argument('--ignore-certificate-errors-spki-list')
-    chromeOptions.add_argument("--ignore-certificate-errors")
-    chromeOptions.add_argument("--ignore-ssl-errors")
+    #chromeOptions.add_argument("--headless")
+    chromeOptions.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36")
+    chromeOptions.add_argument("--disable-blink-features=AutomationControlled")  # Disable Automation flag
+    chromeOptions.add_argument("--disable-infobars")  # Prevent the "Chrome is being controlled" info bar
+    chromeOptions.add_argument("--no-sandbox")  # Prevent issues in some environments
+    chromeOptions.add_argument("--disable-dev-shm-usage")  # Workaround for headless mode issues
+    chromeOptions.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chromeOptions.add_experimental_option('useAutomationExtension', False)
+    chromeOptions.add_argument("--enable-javascript")  # Ensure JavaScript is enabled
+    chromeOptions.add_argument('--disable-popup-blocking') # Disable pop-up blocking
 
     # Create driver
     driver = webdriver.Chrome(options=chromeOptions)
+
+    """ Open a new tab?
+    driver.execute_script("window.open('', '_blank')")
+    driver.switch_to.window(driver.window_handles[1]) 
+    sleep(300)"""
 
     # Login to TrueAchievments and return scraped game collection
     TALogin(driver, login_gamertag, login_password)
