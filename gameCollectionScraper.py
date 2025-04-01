@@ -29,11 +29,11 @@ def TALogin(driver, gamertag: str, password: str) -> bool:
         WebDriverWait(driver, TIMEOUT).until(loginButtonPresent)
 
         # Once the text fields are found, enter login information
-        #sleep(uniform(5,15))
+        sleep(uniform(5,15))
         driver.find_element(By.ID , 'txtGamerTag').send_keys(gamertag)
-        #sleep(uniform(5,15))
+        sleep(uniform(5,15))
         driver.find_element(By.ID , 'txtPassword').send_keys(password)
-        #sleep(uniform(5,15))
+        sleep(uniform(5,15))
         driver.find_element(By.ID , 'btnLogin').click()
         sleep(uniform(5,15))
         #driver.execute_script(f"Postback('btnLogin_click')") # Sends javascript to console to login
@@ -121,6 +121,7 @@ def scrapeGameCollection(driver, searchGamertag: str) -> list[list[str]]:
         gameTable.extend(parseTable(gameTableHTML)[1:-1])
 
         # Move to the next page (and wait for it to stop loading)
+        sleep(uniform(5,15))
         moveToNextPage(driver, currentPage)
         currentPage += 1
 
@@ -136,28 +137,25 @@ def scrapeFromGamertag(gamertag: str) -> list[list[str]]:
     dotenv.load_dotenv()
     login_gamertag = os.getenv('gamertag')
     login_password = os.getenv('password')
+    driver_path = os.getenv('driverPath')
 
     # Creating driver options
-    chromeOptions = webdriver.ChromeOptions()
-    #chromeOptions.add_argument("start-maximized")
-    #chromeOptions.add_argument("--headless")
-    chromeOptions.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36")
-    chromeOptions.add_argument("--disable-blink-features=AutomationControlled")  # Disable Automation flag
-    chromeOptions.add_argument("--disable-infobars")  # Prevent the "Chrome is being controlled" info bar
-    chromeOptions.add_argument("--no-sandbox")  # Prevent issues in some environments
-    chromeOptions.add_argument("--disable-dev-shm-usage")  # Workaround for headless mode issues
-    chromeOptions.add_experimental_option("excludeSwitches", ["enable-automation"])
-    chromeOptions.add_experimental_option('useAutomationExtension', False)
-    chromeOptions.add_argument("--enable-javascript")  # Ensure JavaScript is enabled
-    chromeOptions.add_argument('--disable-popup-blocking') # Disable pop-up blocking
+    options = webdriver.ChromeOptions()
+    #options.add_argument("start-maximized")
+    options.add_argument("--headless")
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36")
+    options.add_argument("--disable-blink-features=AutomationControlled")  # Disable Automation flag
+    options.add_argument("--disable-infobars")  # Prevent the "Chrome is being controlled" info bar
+    options.add_argument("--no-sandbox")  # Prevent issues in some environments
+    options.add_argument("--disable-dev-shm-usage")  # Workaround for headless mode issues
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    options.add_argument("--enable-javascript")  # Ensure JavaScript is enabled
+    options.add_argument('--disable-popup-blocking') # Disable pop-up blocking
+    options.binary_location = driver_path
 
     # Create driver
-    driver = webdriver.Chrome(options=chromeOptions)
-
-    """ Open a new tab?
-    driver.execute_script("window.open('', '_blank')")
-    driver.switch_to.window(driver.window_handles[1]) 
-    sleep(300)"""
+    driver = webdriver.Chrome(options=options)
 
     # Login to TrueAchievments and return scraped game collection
     TALogin(driver, login_gamertag, login_password)
