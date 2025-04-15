@@ -57,7 +57,3 @@ function updateHeader() {
     document.getElementById("totalTrueAchievementsScore").innerText = getTotalScore(gameTable, "TA")
     document.getElementById("mostPlayedGame").innerText = getMostPlayedGame(gameTable)
 }
-
-// IF YOU GET A blocked by CORS policy ERROR:
-// Copy and paste gameTable.json to the end of this line:
-//let gameTable = 

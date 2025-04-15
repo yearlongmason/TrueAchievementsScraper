@@ -40,6 +40,20 @@ In your terminal, run: `python staticTAScraper.py <page1.html> <page2.html> ... 
 ### 4. View your stats  
 Once the script finishes, open `index.html` in your browser and enjoy your personalized stats dashboard!
 
+> **Note:** If your stats are not displaying, you may need to temporarily disable CORS (Cross-Origin Resource Sharing) in your browser. **Important:** Do **not** use this method for regular browsing as it disables critical security features.
+>
+> To disable CORS, run the following command in your terminal or command prompt, then open the project in the new browser instance:
+>
+> **Windows:**
+> ```bash
+> "C:\Program Files\Google\Chrome\Application\chrome.exe" --disable-web-security --user-data-dir="C:\tmp\chrome-dev"
+> ```
+>
+> **macOS:**
+> ```bash
+> /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --disable-web-security --user-data-dir="/tmp/chrome-dev"
+> ```
+
 ---
 
 ## The Tech Behind It
