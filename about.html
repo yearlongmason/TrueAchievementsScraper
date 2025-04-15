@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About True Achievements Scraper</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/x-icon" href="{% static '/catchUpFavicon.png' %}">
 </head>
 
 <body class="font-sans bg-gray-800 text-gray-800">
@@ -23,35 +22,64 @@
     <br>
     <br>
     <br>
-    <main class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-6">
+    <main class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-6 mb-6">
         <p class="text-lg">
-            Welcome to <strong>Catch-Up</strong>, a project created by 
-            <a href="https://github.com/JohnnyG1234" target="_blank" class="text-blue-600 hover:underline">John Groton</a>
-            and 
+            Welcome to the <strong>True Achievements Stats Page</strong>, a project created by 
             <a href="https://github.com/yearlongmason" target="_blank" class="text-blue-600 hover:underline">Mason Lee</a>. 
-            Catch-Up is designed to help users stay connected with their friends, familiy, and team through keeping track of quotes.
+            This project is designed to give Xbox gamers a clean, personalized way to view and explore their gaming stats by pulling data directly from <a href="https://www.trueachievements.com/"  target="_blank" class="text-blue-600 hover:underline">TrueAchievements.com</a>.
         </p>
         <h2 class="text-xl font-semibold mt-4">Our Mission</h2>
-        <p>People love collecting quotes from friends, family, or favorite shows, but keeping them organized can be a challenge. Traditional quote books often become chaotic and hard to navigate over time.</p>
+        <p>Tracking your gaming progress is fun but Xbox's built-in tools and even third-party sites can sometimes feel overwhelming or not quite personal enough. We wanted to create a sleek, focused dashboard that puts your achievements front and center, in a way that’s both functional and fun to explore.</p>
         <br>
-        <p>This project offers a fun and convinient way to store and organize quotes. It combines a secure database and a user-friendly website where you can:</p>
+        <p>This project offers a simple and engaging way to visualize your gaming history. It combines web scraping with a custom web interface where you can:</p>
         <ul class="list-disc ml-6 space-y-1">
-            <li>View and manage your quotes.</li>
-            <li>Explore fun statistics about them.</li>
-        </ul>
-        <h2 class="text-xl font-semibold mt-4">The Tech Behind It:</h2>
-        <p>The project integrates with Discord, a popular chat platform, and includes a custom bot. This bot:</p>
-        <ul class="list-disc ml-6 space-y-1">
-            <li>Lets users submit quotes easily.</li>
-            <li>Lets users access quotes in unique ways.</li>
-            <li>And much more!</li>
+            <li>Explore fun statistics about your Xbox gaming history</li>
+            <li>Track your progress over time with clear visuals</li>
         </ul>
 
-        <p>Click <a href="https://discord.com/oauth2/authorize?client_id=1302647415802826855&permissions=67584&integration_type=0&scope=bot" target="_blank" class="text-blue-600 hover:underline">here</a>  to invite the bot to your server!</p>
+        <h2 class="text-xl font-semibold mt-4">How to Run</h2>
+        <p>To view your own Xbox stats — just follow these steps:</p>
+        <ol class="space-y-1 list-decimal list-inside">
+            <li>
+              <strong>Go to your game collection</strong><br>
+              Head over to: <code>https://www.trueachievements.com/gamer/{YourGamertag}/gamecollection</code><br>
+              <em>(Replace <code>{YourGamertag}</code> with your actual Xbox gamertag)</em>
+            </li>
+        
+            <li>
+              <strong>Download each page as HTML</strong><br>
+              <ul>
+                <li>Press <kbd>CTRL</kbd> + <kbd>S</kbd> (or <kbd>Cmd</kbd> + <kbd>S</kbd> on Mac) on each page of your game collection</li>
+                <li>Save the files as <code>.html</code> locally — make sure you download <strong>every page</strong> if your collection spans multiple pages</li>
+              </ul>
+            </li>
+        
+            <li>
+              <strong>Run the scraper</strong><br>
+              Open your terminal and run:<br>
+              <pre><code>python staticTAScraper.py &lt;page1.html&gt; &lt;page2.html&gt; ... &lt;pageN.html&gt;</code></pre>
+              <p>Replace <code>&lt;pageX.html&gt;</code> with the names of your downloaded HTML files. You can include as many pages as needed.</p>
+            </li>
+        
+            <li>
+              <strong>View your stats</strong><br>
+              Once the script finishes, open <code>index.html</code> in your browser — and enjoy your personalized stats dashboard!
+            </li>
+        </ol>
+
+        <h2 class="text-xl font-semibold mt-4">The Tech Behind It:</h2>
+        <p>The project scrapes public user data from TrueAchievements and displays it on a dedicated stats page. Under the hood, it uses:</p>
+        <ul class="list-disc ml-6 space-y-1">
+            <li>Python</li>
+            <li>Selenium and BeautifulSoup for web scraping</li>
+            <li>Chart.js for clean, interactive data visualizations</li>
+            <li>HTML, Tailwind CSS, and JavaScript for a responsive frontend</li>
+        </ul>
+
         <h2 class="text-xl font-semibold mt-4">Get Involved</h2>
         <p>
             As an open source project we welcome contributions! Check out the 
-            <a href="https://github.com/yearlongmason/Catch-Up" target="_blank" class="text-blue-600 hover:underline">repository</a> 
+            <a href="https://github.com/yearlongmason/TrueAchievementsScraper" target="_blank" class="text-blue-600 hover:underline">repository</a> 
             for details on how you can help.
         </p>
     </main>
