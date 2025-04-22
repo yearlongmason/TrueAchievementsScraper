@@ -273,6 +273,17 @@ function renderCompletedVSNotCompleted(){
             plugins: {
                 legend: {
                     position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            if (context.dataIndex == 0){
+                                return `Number of games completed: ${completedGames}`;
+                            } else {
+                                return `Number of games in progress: ${inProgressGames}`;
+                            }
+                        }
+                    }
                 }
             }
         }
