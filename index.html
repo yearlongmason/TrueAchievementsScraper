@@ -25,7 +25,7 @@
 
     <div id="dataViz" class="container mx-auto p-6">
 
-        <!--Most quoted user banner-->
+        <!--Top stats banner-->
         <div class="bg-green-600 text-white p-6 rounded-lg mb-8 shadow-md flex items-center justify-between">
             <div class="flex flex-col">
                 <div class="flex items-center space-x-4">
@@ -54,34 +54,34 @@
         <!-- 2x2 Grid for Visualizations -->
         <div class="grid grid-cols-2 gap-6">
             <div class="bg-white p-4 rounded shadow-md">
-                <h2 class="text-xl font-semibold mb-4">Number of Quotes per Author</h2>
+                <h2 class="text-xl font-semibold mb-4">Most Played Games</h2>
                 <!-- Chart -->
-                <div class="bg-white h-240 rounded-md relative">
-                    <canvas id="numQuotesByAuthor" class="w-full h-full"></canvas>
+                <div class="bg-white min-h-[500px] rounded-md relative">
+                    <canvas id="MostPlayedGameChart" class="w-full h-full"></canvas>
                 </div>
             </div>
     
             <div class="bg-white p-4 rounded shadow-md">
-                <h2 class="text-xl font-semibold mb-4">Most Frequently Quoted Words</h2> <!--Bar Chart-->
+                <h2 class="text-xl font-semibold mb-4">Closest Games to 100% Completion</h2>
                 <!-- Chart -->
-                <div class="bg-white h-240 rounded-md relative">
-                    <canvas id="wordFrequencyChart" class="w-full h-full"></canvas>
+                <div class="bg-white min-h-[500px] rounded-md relative">
+                    <canvas id="ClosestTo100PercentChart" class="w-full h-full"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded shadow-md">
+                <h2 class="text-xl font-semibold mb-4">Time Played vs Percent Completed</h2>
+                <!-- Chart -->
+                <div class="bg-white min-h-[250px] rounded-md relative">
+                    <canvas id="PlaytimeVSPercentage" class="w-full h-full"></canvas>
                 </div>
             </div>
     
             <div class="bg-white p-4 rounded shadow-md">
-                <h2 class="text-xl font-semibold mb-4">Number of Quotes per Month</h2> <!--Histogram-->
+                <h2 class="text-xl font-semibold mb-4">Number of Games Completed VS In Progress</h2>
                 <!-- Chart -->
-                <div class="bg-white h-240 rounded-md relative">
-                    <canvas id="quotesOverTime" class="w-full h-full"></canvas>
-                </div>
-            </div>
-    
-            <div class="bg-white p-4 rounded shadow-md">
-                <h2 class="text-xl font-semibold mb-4">Quote Length Distribution</h2> <!--Line Chart-->
-                <!-- Chart -->
-                <div class="bg-white h-240 rounded-md relative">
-                    <canvas id="quotesLengthDistribution" class="w-full h-full"></canvas>
+                <div class="bg-white min-h-[250px] max-h-[350px] rounded-md relative flex justify-center items-center">
+                    <canvas id="CompletedVSNotCompleted" class="w-full h-full"></canvas>
                 </div>
             </div>
         </div>
