@@ -62,7 +62,7 @@ function updateHeader() {
 
 function renderMostPlayedGames(){
     // Get top 10 most played games
-    sortedGames = gameTable.sort((a, b) => a["Minutes played"] - b["Minutes played"])
+    let sortedGames = gameTable.sort((a, b) => a["Minutes played"] - b["Minutes played"])
     if(sortedGames.length > 10) {
         sortedGames = sortedGames.slice(sortedGames.length - 10)
     }
@@ -123,7 +123,7 @@ function renderMostPlayedGames(){
 
 function renderClosestTo100PercentChart(){
     // Get top 10 most played games
-    sortedGames = gameTable.sort((a, b) => a["%age"] - b["%age"])
+    let sortedGames = gameTable.sort((a, b) => a["%age"] - b["%age"])
     sortedGames = sortedGames.filter((game) => game["%age"] != 100)
     if(sortedGames.length > 10) {
         sortedGames = sortedGames.slice(sortedGames.length - 10)
@@ -189,9 +189,10 @@ function renderClosestTo100PercentChart(){
 function renderPlaytimeVSPercentage(){
     //console.log(gameTable)
     let timeVSPercentage = gameTable.map(game => { return {x: game["%age"], 
-        y: game["Minutes played"],
-    title: game["Title"],
-    timePlayed: game["Time played"]} })
+        y: game["Minutes played"], 
+        title: game["Title"],
+        timePlayed: game["Time played"]} 
+    })
 
     const data = {
         datasets: [{
@@ -238,7 +239,6 @@ function renderPlaytimeVSPercentage(){
                         font: {
                             size: 14
                         }
-                        
                     },
                     //type: "logarithmic"
                 }
